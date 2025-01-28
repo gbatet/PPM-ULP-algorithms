@@ -12,14 +12,13 @@ created: 23/01/2024
 from argparse import ArgumentParser
 import matplotlib.pyplot as plt
 
-from demlib.demlib.core import Demodulate as dm
+import demlib as dm
 
 plt.rcParams.update({
     "text.usetex": True
 })
 
 # MAIN
-
 
 if __name__ == "__main__":
 
@@ -57,8 +56,8 @@ if __name__ == "__main__":
 
     try:
         # READ WAV
-        sample_rate, samples, time = dm.read_wav() # Samples in counts
-
+        #sample_rate, samples, time = dm.read_wav(args.input) # Samples in counts
+        sample_rate, samples, time = 1,1,1
         # EMULATE ADC
         # # DownSample
         factor = sample_rate / args.sampleRate

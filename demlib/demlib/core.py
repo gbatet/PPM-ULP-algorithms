@@ -40,5 +40,7 @@ class Demodulate:
     def do_buffers(data, buf_size):
         return data
 
-
+    #######################################################
+    # PROCESS THE BUFFER
+    #######################################################
 
