@@ -18,7 +18,7 @@ setup(
     url='https://github.com/b3rax/PPM-ULP-algorithms/demlib',  # Replace with your package's URL
     classifiers=[
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: MIT License',  # Specify the license type
+        'License :: CC0',  # Specify the license type
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.12',  # Specify the minimum Python version
