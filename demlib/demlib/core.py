@@ -38,7 +38,7 @@ class Demodulate:
 
     @staticmethod
     def do_buffers(data, buf_size):
-        return data
+        return data, buf_size
 
     #######################################################
     # PROCESS THE BUFFER

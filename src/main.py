@@ -8,11 +8,17 @@ created: 23/01/2024
 """
 
 # IMPORTS
+import sys
+import os
+
+# Add the 'demlib' package to the Python path manually
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../demlib')))
+import demlib as dm
 
 from argparse import ArgumentParser
 import matplotlib.pyplot as plt
 
-import demlib as dm
+
 
 plt.rcParams.update({
     "text.usetex": True
@@ -71,17 +77,17 @@ if __name__ == "__main__":
     # CFAR THRESHOLD
     # TOA DETECTION
 
-        # PLOT
-        # # ADC input
-        fig_gnrl, (gnrl) = plt.subplots()
-        gnrl.plot(time, samples)
-        gnrl.set_ylabel(r"\bf{ADC Counts - x(n)}")
-        gnrl.set_xlabel(r"\bf{Time (s)}")
-
-        # # Detection method
-
-        # # PLT SHOW
-        plt.show()
+        # # PLOT
+        # # # ADC input
+        # fig_gnrl, (gnrl) = plt.subplots()
+        # gnrl.plot(time, samples)
+        # gnrl.set_ylabel(r"\bf{ADC Counts - x(n)}")
+        # gnrl.set_xlabel(r"\bf{Time (s)}")
+        #
+        # # # Detection method
+        #
+        # # # PLT SHOW
+        # plt.show()
 
 
 
