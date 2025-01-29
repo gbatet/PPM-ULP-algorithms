@@ -38,12 +38,10 @@ if __name__ == "__main__":
     argparser.add_argument("-b", "--buffer", help="ADC Buffer lenght, default = 256", type=int, default=256)
 
     # PROCESSING
-    argparser.add_argument("-th", "--threshold", help="Threshold method, threshold value, default = 2 V", type=int, default=2)
-    argparser.add_argument("-fft", "--fft", help = "FFT method", action="store_true")
-    argparser.add_argument("-goe", "--goertzel", help="Goertzel method, center frequency, default = 69000", type=int, default=69000)
-    argparser.add_argument("-fil", "--filter", help = "Filter method", action="store_true")
+    argparser.add_argument("-m", "--method", help="Processing method, 1: FFT, 2: Go, 3: Filt, default = 1", type = int, default=1)
 
-    # BANDPASS
+    # CONFIG METHODS
+    argparser.add_argument("-goe", "--goertzel", help="Goertzel method, center frequency, default = 69000", type=int, default=69000)
     argparser.add_argument("-on", "--onFreq", help="Bandpass on frequency in Hz, default 68000 Hz", type=int, default = 68000)
     argparser.add_argument("-off", "--offFreq", help="Bandpass off frequency in Hz, default 70000 Hz", type=int, default=70000)
 
@@ -82,8 +80,7 @@ if __name__ == "__main__":
         #######################################################
 
         # FFT
-        if args.fft:
-
+        if args.method == 1:
             method_units = r"\bf{Spectral Power}"
             fft_res, lb, ub = dm.do_fft(buffer, args.sampleRate, args.onFreq, args.offFreq)
 
@@ -91,6 +88,18 @@ if __name__ == "__main__":
             print("Method: FFT")
             print(f"Set frequency bandpass: {args.onFreq} -{args.offFreq} Hz ")
             print(f"Real frequency bandpass: {lb} -{ub} Hz ")
+
+        # Goertzel
+        elif args.method == 2:
+            pass
+
+        # Filtering
+        elif args.method == 3:
+            pass
+
+        # Invalid method
+        else:
+            print("Invalid method")
 
     # CFAR THRESHOLD
     # TOA DETECTION
