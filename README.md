@@ -1,18 +1,27 @@
 ![Static Badge](https://img.shields.io/badge/Repository_Status-Building-yellow?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/Current_Version-v0.3-green?style=for-the-badge)
 # PPM-ULP-algorithms
 
-Pulse Position Modulation (PPM) demodulation algorithms test repository
+Pulse Position Modulation (PPM) demodulation Ultra low power (ULP) algorithms test repository
+
+Algorithm with most message detectability at the lowest power consumption.
+
+Algorithm detectability assessment tests in Python
+
+**Target:** Bidirectional acoustic tag (BTAG)
+
+**Target HW:** STM32L432 microcontroller
 
 -------------
 
-TO BE IMPLEMENTED:
+STATE OF THE REPOSITORY:
 ---------------
+TO BE IMPLEMENTED:
 
 - CFAR thresholding
 - DETECTION
 
 IMPLEMENTED:
----------------
+
 - FFT processing
 - GÖERTZEL processing
 - FILTERING processing
