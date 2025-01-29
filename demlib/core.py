@@ -8,7 +8,7 @@ created: 23/01/2024
 """
 
 
-from math import sqrt, floor
+from math import sqrt, floor, ceil
 
 
 from scipy.fft import fft, fftfreq
@@ -63,7 +63,7 @@ def do_downsample_float(data, factor):
     return downsampled_signal
 
 
-def do_buffers(data, length):
+def do_buffers(data, length, sample_rate):
     buffer = []
     time_buf = []
 
@@ -72,11 +72,9 @@ def do_buffers(data, length):
 
     for i in range(int(len(data) / length)):
         buffer.append([])
-        time_buf.append(i * length)
+        time_buf.append(i * length / sample_rate)
         for j in range(length):
             buffer[i].append(data[i * length + j])
-
-    print(len(buffer), len(time_buf))
 
     return buffer, time_buf
 
@@ -92,7 +90,7 @@ def do_buffers(data, length):
 # SPECTRAL
 ###########################
 
-def do_fft(data, sample_rate,lb, ub):
+def do_fft(data, sample_rate,onFreq, offFreq):
 
     """
     Implements the fft in a given signal buffer sample array.
@@ -100,8 +98,8 @@ def do_fft(data, sample_rate,lb, ub):
     Parameters:
     data (np.array): Input signal samples in buffers of a given length.
     sample_rate (float): Sampling rate in Hz.
-    lb (int): left cut Frequency of FFT in Hz.
-    ub (int): right cut Frequency of FFT in Hz.
+    onFreq (int): left cut Frequency of FFT in Hz.
+    offFreq (int): right cut Frequency of FFT in Hz.
 
     Returns:
     out_fft (np.array): Output array for each buffer FFT.
@@ -111,19 +109,24 @@ def do_fft(data, sample_rate,lb, ub):
     # Y (array): Power at a given frequency.
     # Xfft (array): Frequency bin.
 
+    lb = floor(onFreq * len(data[0]) / sample_rate)
+    ub = ceil(offFreq * len(data[0]) / sample_rate)
+
     for i in range(len(data)):
-        N = len(data)
+        N = len(data[i])
         T = 1 / sample_rate
 
-        Yfft = fft(data)
+        Yfft = fft(data[i])
         Y = 2.0/N * np.abs(Yfft[0:N//2])
 
-        Xfft = fftfreq(N, T)[:N//2]
         Y[0] = 0
+        out_fft.append(np.mean(Y[lb:ub]))
 
-        out_fft.append(max(Y[lb:ub]))
+    Xfft = fftfreq(N, T)[:N // 2]
+    rlb = Xfft[lb]
+    rub = Xfft[ub]
 
-    return out_fft
+    return out_fft, rlb, rub
 
 
 

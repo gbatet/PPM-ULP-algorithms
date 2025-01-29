@@ -57,7 +57,9 @@ if __name__ == "__main__":
     ############
     # VARIABLES
     ############
-    method = "" # Variable for method of processing
+    method = ""         # Variable for method of processing
+    method_units = ""   # Variable for method units
+
     try:
         #######################################################
         # READ DATA
@@ -73,7 +75,7 @@ if __name__ == "__main__":
         samples_down = dm.do_downsample_float(samples, factor)
 
         # Create buffers
-        buffer, buf_times = dm.do_buffers(samples_down, args.buffer)
+        buffer, buf_times = dm.do_buffers(samples_down, args.buffer, args.sampleRate)
 
         #######################################################
         # PROCESS THE BUFFERS
@@ -81,8 +83,14 @@ if __name__ == "__main__":
 
         # FFT
         if args.fft:
-            method = "FFT"
-            fft_res = dm.do_fft(buffer, args.sampleRate, args.onFreq, args.offFreq)
+
+            method_units = r"\bf{Spectral Power}"
+            fft_res, lb, ub = dm.do_fft(buffer, args.sampleRate, args.onFreq, args.offFreq)
+
+            method = r"\bf{FFT}"
+            print("Method: FFT")
+            print(f"Set frequency bandpass: {args.onFreq} -{args.offFreq} Hz ")
+            print(f"Real frequency bandpass: {lb} -{ub} Hz ")
 
     # CFAR THRESHOLD
     # TOA DETECTION
@@ -96,6 +104,11 @@ if __name__ == "__main__":
         gnrl.set_xlabel(r"\bf{Time (s)}")
 
         # # Detection method
+        fig_method, (mth) = plt.subplots()
+        mth.plot(buf_times, fft_res)
+        mth.set_ylabel(method_units)
+        mth.set_xlabel(r"\bf{Time (s)}")
+
 
         # # PLT SHOW
         plt.show()
