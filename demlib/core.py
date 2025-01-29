@@ -8,7 +8,7 @@ created: 23/01/2024
 """
 
 
-from math import sqrt, floor, ceil
+from math import sqrt, floor, ceil, trunc
 
 
 from scipy.fft import fft, fftfreq
@@ -37,12 +37,13 @@ def read_wav(file):
 # EMULATE ADC OPERATIVE
 #######################################################
 
-def do_downsample_float(data, factor):
+def do_downsample_float(data, sample_rate, factor):
     """
     Downsample a signal by a specified float  factor
 
     Parameters:
     - data: np.array, the input signal to be downsampled
+    - sample_rate: int, the final sampling rate
     - factor: int, the downsampling factor (every `factor`-th sample is kept)
 
     Returns:
@@ -60,21 +61,25 @@ def do_downsample_float(data, factor):
         downsampled_signal.append(data[floor(i)])
         i = i + factor
 
-    return downsampled_signal
+    times = np.arange(0, len(downsampled_signal))
+    times = times/sample_rate
+
+    return downsampled_signal, times
 
 
 def do_buffers(data, length, sample_rate):
+    data_buf = data[:]
     buffer = []
     time_buf = []
 
-    while len(data) % length != 0:
-        data.append(np.mean(data))
+    while len(data_buf) % length != 0:
+        data_buf.append(np.mean(data_buf))
 
-    for i in range(int(len(data) / length)):
+    for i in range(int(len(data_buf) / length)):
         buffer.append([])
         time_buf.append(i * length / sample_rate)
         for j in range(length):
-            buffer[i].append(data[i * length + j])
+            buffer[i].append(data_buf[i * length + j])
 
     return buffer, time_buf
 
@@ -85,8 +90,65 @@ def do_buffers(data, length, sample_rate):
 
 # TEMPORAL
 ###########################
+# Down convert signal mixed with set LO
+def mix_downconvert(data, sample_rate, f_LO):
+    """
+    Downconvert a signal by mixing with a local oscillator and low-pass filtering.
 
+    Parameters:
+    - signal: np.array, the input signal to be downconverted
+    - fs: float, the sampling frequency of the signal
+    - f_LO: float, the frequency of the local oscillator for downconversion
 
+    Returns:
+    - downconverted_signal: np.array, the downconverted signal
+    """
+
+    # Generate the local oscillator (cosine wave at f_LO)
+    t = np.arange(len(data)) / sample_rate
+    LO_signal = np.cos(2 * np.pi * f_LO * t)
+
+    # Mix the input signal with the LO signal
+    mixed_signal = data * LO_signal
+
+    return mixed_signal
+
+def filter_antialiassing(data, coefficients):
+
+    """
+    Filter mixed signal with LO
+
+    Parameters:
+    - data: np.array, the input signal mixed with LO to be filtered
+    - sample_rate: float, the sampling frequency of the signal
+    - f_LO: float, the frequency of the local oscillator for downconversion
+    - cutoff_freq: float, the cutoff frequency for the low-pass filter after mixing
+    - num_taps: int, number of taps for the low-pass FIR filter (default: 5)
+
+    Returns:
+    - downconverted_signal: np.array, the downconverted filtered signal
+    """
+    filtered_signal = np.convolve(data, coefficients, mode='same')
+
+    return filtered_signal
+
+def filter(data, sample_rate, frequency, f_LO, coefficients_antialiassing, coefficients_bandpass):
+
+    factor = trunc(frequency / (frequency - f_LO))
+    new_sampling_rate =  sample_rate/factor
+
+    filter_output = []
+
+    for i in range(len(data)):
+        mixed_signal = mix_downconvert(data[i], sample_rate, f_LO)
+        prefiltered_signal = filter_antialiassing(mixed_signal, coefficients_antialiassing)
+        filtered_signal = np.convolve(prefiltered_signal[::factor], coefficients_bandpass, mode='same')
+
+        filter_output.append(np.mean(abs(filtered_signal)))
+
+    times_filtered = np.arange(0, len(filter_output))/new_sampling_rate
+
+    return filter_output, times_filtered
 # SPECTRAL
 ###########################
 

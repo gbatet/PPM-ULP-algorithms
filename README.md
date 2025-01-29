@@ -1,4 +1,4 @@
-![Static Badge](https://img.shields.io/badge/Repository_Status-Building-yellow?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/Current_Version-v0.2-green?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/Repository_Status-Building-yellow?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/Current_Version-v0.3-green?style=for-the-badge)
 # PPM-ULP-algorithms
 
 Pulse Position Modulation (PPM) demodulation algorithms test repository
@@ -7,7 +7,7 @@ Pulse Position Modulation (PPM) demodulation algorithms test repository
 
 TO BE IMPLEMENTED:
 ---------------
-- FILTERING processing
+
 - CFAR thresholding
 - DETECTION
 
@@ -15,6 +15,7 @@ IMPLEMENTED:
 ---------------
 - FFT processing
 - GÖERTZEL processing
+- FILTERING processing
 
 ---------------------------
 LICENCE:

@@ -10,11 +10,10 @@ created: 23/01/2024
 # IMPORTS
 
 import demlib as dm
+from docs.filter_coefficients import coefficients_antialiassing, coefficients_bandpass
 
 from argparse import ArgumentParser
 import matplotlib.pyplot as plt
-
-
 
 plt.rcParams.update({
     "text.usetex": True
@@ -42,10 +41,11 @@ def main(args):
 
     # DownSample
     factor = sample_rate / args.sampleRate
-    samples_down = dm.do_downsample_float(samples, factor)
+    samples_down, times_down = dm.do_downsample_float(samples, args.sampleRate, factor)
 
     # Create buffers
     buffer, buf_times = dm.do_buffers(samples_down, args.buffer, args.sampleRate)
+
 
     #######################################################
     # PROCESS THE BUFFERS
@@ -71,12 +71,16 @@ def main(args):
 
         method = r"\bf{GOERTZEL}"
         print("Method: GOERTZEL")
-        print(f"Set frequency: {args.goertzel} Hz ")
+        print(f"Center set frequency: {args.goertzel} Hz ")
         print(f"Frequency bin width: {args.sampleRate/(args.buffer*2)} Hz ")
 
     # Filtering
     elif args.method == 3:
-        pass
+        method_units = r"\bf{Counts}"
+        method_res, method_times = dm.filter(buffer,args.sampleRate, args.filterFrequency, args.localOscillator, coefficients_antialiassing, coefficients_bandpass)
+
+        method = r"\bf{FILTERING}"
+        print("Method: FILTERING")
 
     # Invalid method
     else:
@@ -124,8 +128,12 @@ if __name__ == "__main__":
 
     # CONFIG METHODS
     argparser.add_argument("-goe", "--goertzel", help="Goertzel method, center frequency, default = 69000", type=int, default=69000)
+
     argparser.add_argument("-on", "--onFreq", help="Bandpass on frequency in Hz, default 68000 Hz", type=int, default = 68000)
     argparser.add_argument("-off", "--offFreq", help="Bandpass off frequency in Hz, default 70000 Hz", type=int, default=70000)
+
+    argparser.add_argument("-ffreq", "--filterFrequency", help="center signal frequency", type=int, default=69000)
+    argparser.add_argument("-LO", "--localOscillator", help="Local Oscillator, default 58000", type=int, default=58000)
 
     # OUTPUT
     argparser.add_argument("-sw", "--show", help="show plot default YES (1)", type=int,default=1)
