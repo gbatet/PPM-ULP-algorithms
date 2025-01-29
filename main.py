@@ -12,7 +12,7 @@ import sys
 import os
 
 # Add the 'demlib' package to the Python path manually
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../demlib')))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../demlib')))
 import demlib as dm
 
 from argparse import ArgumentParser
