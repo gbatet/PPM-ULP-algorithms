@@ -103,8 +103,8 @@ def main(args):
     #######################################################
     # PLOT
     #######################################################
-    # # ADC input
     if args.show:
+        # ADC input
         fig_gnrl, (gnrl) = plt.subplots()
         gnrl.plot(time, samples)
         gnrl.set_ylabel(r"\bf{ADC Counts - x(n)}")
