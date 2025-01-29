@@ -8,7 +8,7 @@ created: 23/01/2024
 """
 
 # IMPORTS
-
+import sys
 import demlib as dm
 from docs.filter_coefficients import coefficients_antialiassing, coefficients_bandpass
 
@@ -22,9 +22,13 @@ plt.rcParams.update({
 # MAIN
 
 def main(args):
+
     #######################################################
     # VARIABLES
     #######################################################
+    if args.output:
+        sys.stdout = open("docs/log.txt", "w")
+
     method = ""  # Variable for method of processing
     method_units = ""  # Variable for method units
     method_res = []  # Variable for the  method application result
@@ -34,6 +38,7 @@ def main(args):
     # READ DATA
     #######################################################
     sample_rate, samples, time = dm.read_wav(args.input)  # Samples in counts
+    print(f"Input file: {args.input}")
 
     #######################################################
     # EMULATE ADC OPERATIVE
@@ -87,25 +92,39 @@ def main(args):
     else:
         print("Invalid method")
 
-    # CFAR THRESHOLD
-    # TOA DETECTION
+    #######################################################
+    # THRESHOLD
+    #######################################################
 
+    #######################################################
+    # DETECTION
+    #######################################################
+
+    #######################################################
     # PLOT
+    #######################################################
     # # ADC input
+    if args.show:
+        fig_gnrl, (gnrl) = plt.subplots()
+        gnrl.plot(time, samples)
+        gnrl.set_ylabel(r"\bf{ADC Counts - x(n)}")
+        gnrl.set_xlabel(r"\bf{Time (s)}")
 
-    fig_gnrl, (gnrl) = plt.subplots()
-    gnrl.plot(time, samples)
-    gnrl.set_ylabel(r"\bf{ADC Counts - x(n)}")
-    gnrl.set_xlabel(r"\bf{Time (s)}")
+        # Detection method
+        fig_method, (mth) = plt.subplots()
+        mth.plot(method_times, method_res)
+        mth.set_ylabel(method + " - " + method_units)
+        mth.set_xlabel(r"\bf{Time (s)}")
 
-    # # Detection method
-    fig_method, (mth) = plt.subplots()
-    mth.plot(method_times, method_res)
-    mth.set_ylabel(method + " - " + method_units)
-    mth.set_xlabel(r"\bf{Time (s)}")
+        # PLT SHOW
+        plt.show()
+    else: pass
 
-    # # PLT SHOW
-    plt.show()
+    #######################################################
+    # OUTPUT LOG FILE
+    #######################################################
+    if args.output:
+        sys.stdout.close()
 
     return None
 
@@ -138,7 +157,7 @@ if __name__ == "__main__":
 
     # OUTPUT
     argparser.add_argument("-sw", "--show", help="show plot default YES (1)", type=int,default=1)
-    argparser.add_argument("-o", "--output", help="output file, default out.txt", type=str, default="out.txt")
+    argparser.add_argument("-o", "--output", help="0 if no output, 1 if log.txt", type=int, default=1)
 
     # EXIT
     args = argparser.parse_args()
