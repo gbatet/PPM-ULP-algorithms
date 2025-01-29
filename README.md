@@ -7,15 +7,14 @@ Pulse Position Modulation (PPM) demodulation algorithms test repository
 
 TO BE IMPLEMENTED:
 ---------------
-- GÖERTZEL
-- FILTERING
-
-PARTIALLY IMPLEMENTED:
----------------
-- FFT
+- FILTERING processing
+- CFAR thresholding
+- DETECTION
 
 IMPLEMENTED:
 ---------------
+- FFT processing
+- GÖERTZEL processing
 
 ---------------------------
 LICENCE:

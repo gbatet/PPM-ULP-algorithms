@@ -90,6 +90,7 @@ def do_buffers(data, length, sample_rate):
 # SPECTRAL
 ###########################
 
+# FFT
 def do_fft(data, sample_rate,onFreq, offFreq):
 
     """
@@ -128,7 +129,40 @@ def do_fft(data, sample_rate,onFreq, offFreq):
 
     return out_fft, rlb, rub
 
+# Goertzel
+def do_goertzel(data, sample_rate, target_freq):
 
+    """
+    Implements the Goertzel algorithm to detect a specific target frequency
+    in a given signal sample array.
+
+    Parameters:
+    samples (np.array): Input signal samples.
+    sample_rate (float): Sampling rate in Hz.
+    target_freq (float): Target frequency to detect in Hz.
+
+    Returns:
+    float: Power at the target frequency.
+    """
+    # Calculate normalized frequency and Goertzel coefficient
+    omega = 2 * np.pi * target_freq / sample_rate
+    coeff = 2 * np.cos(omega)
+
+    power = []
+    # Run Goertzel
+    for i in range(len(data)):
+        # Initialize Goertzel variables
+        s_prev = 0.0
+        s_prev2 = 0.0
+        for sample in data[i]:
+            s = sample + coeff * s_prev - s_prev2
+            s_prev2 = s_prev
+            s_prev = s
+
+        # Calculate the power at the target frequency
+        power.append(s_prev2 ** 2 + s_prev ** 2 - coeff * s_prev * s_prev2)
+
+    return power
 
 #######################################################
 # DETECT THE SIGNAL

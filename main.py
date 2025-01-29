@@ -22,6 +22,88 @@ plt.rcParams.update({
 
 # MAIN
 
+def main(args):
+    #######################################################
+    # VARIABLES
+    #######################################################
+    method = ""  # Variable for method of processing
+    method_units = ""  # Variable for method units
+    method_res = []  # Variable for the  method application result
+    method_times = []  # Variable to store the times vector
+
+    #######################################################
+    # READ DATA
+    #######################################################
+    sample_rate, samples, time = dm.read_wav(args.input)  # Samples in counts
+
+    #######################################################
+    # EMULATE ADC OPERATIVE
+    #######################################################
+
+    # DownSample
+    factor = sample_rate / args.sampleRate
+    samples_down = dm.do_downsample_float(samples, factor)
+
+    # Create buffers
+    buffer, buf_times = dm.do_buffers(samples_down, args.buffer, args.sampleRate)
+
+    #######################################################
+    # PROCESS THE BUFFERS
+    #######################################################
+
+    # FFT
+    if args.method == 1:
+
+        method_units = r"\bf{Spectral Power}"
+        method_res, lb, ub = dm.do_fft(buffer, args.sampleRate, args.onFreq, args.offFreq)
+        method_times = buf_times
+
+        method = r"\bf{FFT}"
+        print("Method: FFT")
+        print(f"Set frequency bandpass: {args.onFreq} -{args.offFreq} Hz ")
+        print(f"Real frequency bandpass: {lb} -{ub} Hz ")
+
+    # Goertzel
+    elif args.method == 2:
+        method_units = r"\bf{Spectral Power}"
+        method_res = dm.do_goertzel(buffer, args.sampleRate, args.goertzel)
+        method_times = buf_times
+
+        method = r"\bf{GOERTZEL}"
+        print("Method: GOERTZEL")
+        print(f"Set frequency: {args.goertzel} Hz ")
+        print(f"Frequency bin width: {args.sampleRate/(args.buffer*2) } Hz ")
+
+    # Filtering
+    elif args.method == 3:
+        pass
+
+    # Invalid method
+    else:
+        print("Invalid method")
+
+    # CFAR THRESHOLD
+    # TOA DETECTION
+
+    # PLOT
+    # # ADC input
+
+    fig_gnrl, (gnrl) = plt.subplots()
+    gnrl.plot(time, samples)
+    gnrl.set_ylabel(r"\bf{ADC Counts - x(n)}")
+    gnrl.set_xlabel(r"\bf{Time (s)}")
+
+    # # Detection method
+    fig_method, (mth) = plt.subplots()
+    mth.plot(method_times, method_res)
+    mth.set_ylabel(method + " - " + method_units)
+    mth.set_xlabel(r"\bf{Time (s)}")
+
+    # # PLT SHOW
+    plt.show()
+
+    return None
+
 if __name__ == "__main__":
 
     # INIT
@@ -31,7 +113,7 @@ if __name__ == "__main__":
     argparser.add_argument("-v", "--verbose", help="more info", action="store_true")
 
     # INPUT
-    argparser.add_argument("-i", "--input", help="Input file directory and name, default docs/4.wav", type=str, default="docs/4.wav")
+    argparser.add_argument("-i", "--input", help="Input file directory and name, default docs/1.wav", type=str, default="docs/1.wav")
 
     # ACQUISITION
     argparser.add_argument("-sr", "--sampleRate", help="Sample Rate of the uC, default 150000 S/s", type=int, default=150000)
@@ -52,77 +134,8 @@ if __name__ == "__main__":
     # EXIT
     args = argparser.parse_args()
 
-    ############
-    # VARIABLES
-    ############
-    method = ""         # Variable for method of processing
-    method_units = ""   # Variable for method units
 
     try:
-        #######################################################
-        # READ DATA
-        #######################################################
-        sample_rate, samples, time = dm.read_wav(args.input) # Samples in counts
-
-        #######################################################
-        # EMULATE ADC OPERATIVE
-        #######################################################
-
-        # DownSample
-        factor = sample_rate / args.sampleRate
-        samples_down = dm.do_downsample_float(samples, factor)
-
-        # Create buffers
-        buffer, buf_times = dm.do_buffers(samples_down, args.buffer, args.sampleRate)
-
-        #######################################################
-        # PROCESS THE BUFFERS
-        #######################################################
-
-        # FFT
-        if args.method == 1:
-            method_units = r"\bf{Spectral Power}"
-            fft_res, lb, ub = dm.do_fft(buffer, args.sampleRate, args.onFreq, args.offFreq)
-
-            method = r"\bf{FFT}"
-            print("Method: FFT")
-            print(f"Set frequency bandpass: {args.onFreq} -{args.offFreq} Hz ")
-            print(f"Real frequency bandpass: {lb} -{ub} Hz ")
-
-        # Goertzel
-        elif args.method == 2:
-            pass
-
-        # Filtering
-        elif args.method == 3:
-            pass
-
-        # Invalid method
-        else:
-            print("Invalid method")
-
-    # CFAR THRESHOLD
-    # TOA DETECTION
-
-        # PLOT
-        # # ADC input
-
-        fig_gnrl, (gnrl) = plt.subplots()
-        gnrl.plot(time, samples)
-        gnrl.set_ylabel(r"\bf{ADC Counts - x(n)}")
-        gnrl.set_xlabel(r"\bf{Time (s)}")
-
-        # # Detection method
-        fig_method, (mth) = plt.subplots()
-        mth.plot(buf_times, fft_res)
-        mth.set_ylabel(method_units)
-        mth.set_xlabel(r"\bf{Time (s)}")
-
-
-        # # PLT SHOW
-        plt.show()
-
-
-
+        main(args)
     except KeyboardInterrupt:
-        print("Program terminated.")
+        print("Program terminated by user.")
