@@ -1,3 +1,10 @@
+# https://fiiir.com/
+
+#LOWPASSFIIR
+# SR = 150000
+# 31500
+# 27000
+
 coefficients_antialiassing = [
     -0.074710616275160985,
     0.074061034723011732,
@@ -8,6 +15,8 @@ coefficients_antialiassing = [
     -0.074710616275160985,
 ]
 
+
+# BANDPASS FIIIR
 # SR = 25000
 # 10000
 # 1250
