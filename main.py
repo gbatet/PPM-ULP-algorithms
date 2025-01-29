@@ -72,7 +72,7 @@ def main(args):
         method = r"\bf{GOERTZEL}"
         print("Method: GOERTZEL")
         print(f"Set frequency: {args.goertzel} Hz ")
-        print(f"Frequency bin width: {args.sampleRate/(args.buffer*2) } Hz ")
+        print(f"Frequency bin width: {args.sampleRate/(args.buffer*2)} Hz ")
 
     # Filtering
     elif args.method == 3:
