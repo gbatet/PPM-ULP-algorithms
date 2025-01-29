@@ -8,11 +8,7 @@ created: 23/01/2024
 """
 
 # IMPORTS
-import sys
-import os
 
-# Add the 'demlib' package to the Python path manually
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../demlib')))
 import demlib as dm
 
 from argparse import ArgumentParser
@@ -58,36 +54,51 @@ if __name__ == "__main__":
     # EXIT
     args = argparser.parse_args()
 
+    ############
     # VARIABLES
-
+    ############
+    method = "" # Variable for method of processing
     try:
-        # READ WAV
-        #sample_rate, samples, time = dm.read_wav(args.input) # Samples in counts
-        sample_rate, samples, time = 1,1,1
-        # EMULATE ADC
-        # # DownSample
+        #######################################################
+        # READ DATA
+        #######################################################
+        sample_rate, samples, time = dm.read_wav(args.input) # Samples in counts
+
+        #######################################################
+        # EMULATE ADC OPERATIVE
+        #######################################################
+
+        # DownSample
         factor = sample_rate / args.sampleRate
         samples_down = dm.do_downsample_float(samples, factor)
 
-        # # Create buffers
+        # Create buffers
         buffer, buf_times = dm.do_buffers(samples_down, args.buffer)
 
+        #######################################################
+        # PROCESS THE BUFFERS
+        #######################################################
 
-    # PROCESS BUFFERS
+        # FFT
+        if args.fft:
+            method = "FFT"
+            fft_res = dm.do_fft(buffer, args.sampleRate, args.onFreq, args.offFreq)
+
     # CFAR THRESHOLD
     # TOA DETECTION
 
-        # # PLOT
-        # # # ADC input
-        # fig_gnrl, (gnrl) = plt.subplots()
-        # gnrl.plot(time, samples)
-        # gnrl.set_ylabel(r"\bf{ADC Counts - x(n)}")
-        # gnrl.set_xlabel(r"\bf{Time (s)}")
-        #
-        # # # Detection method
-        #
-        # # # PLT SHOW
-        # plt.show()
+        # PLOT
+        # # ADC input
+
+        fig_gnrl, (gnrl) = plt.subplots()
+        gnrl.plot(time, samples)
+        gnrl.set_ylabel(r"\bf{ADC Counts - x(n)}")
+        gnrl.set_xlabel(r"\bf{Time (s)}")
+
+        # # Detection method
+
+        # # PLT SHOW
+        plt.show()
 
 
 
