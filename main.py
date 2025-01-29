@@ -77,7 +77,8 @@ def main(args):
     # Filtering
     elif args.method == 3:
         method_units = r"\bf{Counts}"
-        method_res, method_times = dm.filter(buffer,args.sampleRate, args.filterFrequency, args.localOscillator, coefficients_antialiassing, coefficients_bandpass)
+        method_res= dm.filter(buffer,args.sampleRate, args.filterFrequency, args.localOscillator, coefficients_antialiassing, coefficients_bandpass)
+        method_times = buf_times
 
         method = r"\bf{FILTERING}"
         print("Method: FILTERING")

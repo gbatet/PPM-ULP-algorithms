@@ -139,16 +139,17 @@ def filter(data, sample_rate, frequency, f_LO, coefficients_antialiassing, coeff
 
     filter_output = []
 
+
     for i in range(len(data)):
         mixed_signal = mix_downconvert(data[i], sample_rate, f_LO)
         prefiltered_signal = filter_antialiassing(mixed_signal, coefficients_antialiassing)
-        filtered_signal = np.convolve(prefiltered_signal[::factor], coefficients_bandpass, mode='same')
+        new_signal = prefiltered_signal[::factor]
+        filtered_signal = np.convolve(new_signal, coefficients_bandpass, mode='same')
 
         filter_output.append(np.mean(abs(filtered_signal)))
 
-    times_filtered = np.arange(0, len(filter_output))/new_sampling_rate
 
-    return filter_output, times_filtered
+    return filter_output
 # SPECTRAL
 ###########################
 
