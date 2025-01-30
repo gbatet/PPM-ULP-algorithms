@@ -11,7 +11,10 @@ created: 23/01/2024
 import sys
 import demlib as dm
 from complementary.PPMdemlib_old import normalize_0_1
+from demlib import do_cfar
 from docs.filter_coefficients import coefficients_antialiassing, coefficients_bandpass
+
+from math import ceil
 
 from argparse import ArgumentParser
 import matplotlib.pyplot as plt
@@ -96,10 +99,13 @@ def main(args):
     # THRESHOLD
     #######################################################
 
+    threshold, detect = do_cfar(method_res_norm, args.sampleRate, args.buffer, args.pulseWidth, 50)
 
     #######################################################
     # DETECTION
     #######################################################
+
+    # detec_pulse = dm.do_check_pulse()
 
     #######################################################
     # PLOT
@@ -114,15 +120,27 @@ def main(args):
         # Detection method
         if args.normalised:
             method_plot = method_res_norm
-            method_units = r"\bf{ - Result normalised}"
+            method_units = r"\bf{ - normalised}"
         else:
             method_plot = method_res
-            method_units = r"\bf{Calculation Result}"
+            method_units = r"\bf{ - Calculation Result}"
 
-        fig_method, (mth) = plt.subplots()
-        mth.plot(method_times, method_plot)
+        fig_method, (mth, thr) = plt.subplots(2,1)
+        # # Method result
+        mth.plot(method_times, method_plot, label="Signal Processed")
+
+        if args.normalised:
+            mth.plot(method_times, threshold, color="red", alpha = 0.3, label = "CFAR Threshold")
+            mth.set_ylim(0, 1.5)
+            mth.legend(loc="upper right")
+
         mth.set_ylabel(method + method_units)
-        mth.set_xlabel(r"\bf{Time (s)}")
+
+        # # Threshold
+        thr.plot(method_times, detect, color="green", label = "Signal detection")
+        thr.set_ylim(0,1.5)
+        thr.legend(loc="upper right")
+        thr.set_xlabel(r"\bf{Time (s)}")
 
         # PLT SHOW
         plt.show()
@@ -163,9 +181,13 @@ if __name__ == "__main__":
     argparser.add_argument("-ffreq", "--filterFrequency", help="center signal frequency", type=int, default=69000)
     argparser.add_argument("-LO", "--localOscillator", help="Local Oscillator, default 58000", type=int, default=58000)
 
+    # DETECTION
+
+    argparser.add_argument("-p", "--pulseWidth", help="Pulse Width, default 5 ms", type=int, default=5)
+
     # OUTPUT
     argparser.add_argument("-sw", "--show", help="show plot default YES (1)", type=int,default=1)
-    argparser.add_argument("-n", "--normalised", help="Output plot, 1 Normalised, 0 not normalised", type=int, default=0)
+    argparser.add_argument("-n", "--normalised", help="Output plot, 1 Normalised, 0 not normalised", type=int, default=1)
     argparser.add_argument("-o", "--output", help="0 if no output, 1 if log.txt", type=int, default=0)
 
     # EXIT

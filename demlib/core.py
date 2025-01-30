@@ -234,3 +234,37 @@ def do_goertzel(data, sample_rate, target_freq):
 # MANAGE THRESHOLD
 ###########################
 
+def do_cfar(data, sample_rate, buffer_len, pulse_width, cells):
+
+    threshold = []
+    detect = []
+    guard = ceil(pulse_width * sample_rate / (buffer_len * 1000))
+
+    for i in range(len(data)):
+        if data[i] == 0:
+            res = 1
+        elif i < (cells + guard + 1):
+            res = np.mean(data[(i+guard+1):(i+guard+cells)])/data[i]
+
+        elif i > (len(data)-cells-guard-1):
+            res = np.mean(data[(i-guard-cells):(i-guard-1)])/data[i]
+
+        else:
+            do_mean= data[(i-guard-cells):(i-guard-1)] + data[(i+guard+1):(i+guard+cells)]
+            res = np.mean(do_mean)/data[i]
+
+        if data[i] > res:
+            detect.append(1)
+        else:
+            detect.append(0)
+
+        threshold.append(res)
+
+    return threshold, detect
+
+# CHECK PULSE WIDTH
+###########################
+
+def do_check_pulse(data, sample_rate):
+    pass
+    return None
