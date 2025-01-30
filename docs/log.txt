@@ -1,4 +1,4 @@
 Input file: docs/2.wav
 Method: GOERTZEL
 Center set frequency: 69000 Hz 
-Frequency bin width: 750.0 Hz 
+Frequency bin width: 1171.875 Hz 

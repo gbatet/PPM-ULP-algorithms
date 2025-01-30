@@ -12,8 +12,7 @@ from math import sqrt, floor, ceil, trunc
 
 
 from scipy.fft import fft, fftfreq
-from scipy import signal
-from scipy.signal import firwin, lfilter
+from scipy.signal.windows import hann, blackman, blackmanharris
 from scipy.io import wavfile
 import numpy as np
 
@@ -150,6 +149,7 @@ def filter(data, sample_rate, frequency, f_LO, coefficients_antialiassing, coeff
 
 
     return filter_output
+
 # SPECTRAL
 ###########################
 
@@ -176,13 +176,13 @@ def do_fft(data, sample_rate,onFreq, offFreq):
     lb = floor(onFreq * len(data[0]) / sample_rate)
     ub = ceil(offFreq * len(data[0]) / sample_rate)
 
+    N = len(data[0])
+    T = 1 / sample_rate
+    w = blackman(N)
+
     for i in range(len(data)):
-        N = len(data[i])
-        T = 1 / sample_rate
-
-        Yfft = fft(data[i])
+        Yfft = fft(data[i]*w)
         Y = 2.0/N * np.abs(Yfft[0:N//2])
-
         Y[0] = 0
         out_fft.append(np.mean(Y[lb:ub]))
 

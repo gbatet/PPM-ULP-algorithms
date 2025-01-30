@@ -10,6 +10,7 @@ created: 23/01/2024
 # IMPORTS
 import sys
 import demlib as dm
+from complementary.PPMdemlib_old import normalize_0_1
 from docs.filter_coefficients import coefficients_antialiassing, coefficients_bandpass
 
 from argparse import ArgumentParser
@@ -58,20 +59,19 @@ def main(args):
 
     # FFT
     if args.method == 1:
-
-        method_units = r"\bf{Spectral Power}"
         method_res, lb, ub = dm.do_fft(buffer, args.sampleRate, args.onFreq, args.offFreq)
+        method_res_norm = normalize_0_1(method_res)
         method_times = buf_times
 
         method = r"\bf{FFT}"
         print("Method: FFT")
         print(f"Set frequency bandpass: {args.onFreq} -{args.offFreq} Hz ")
-        print(f"Real frequency bandpass: {lb} -{ub} Hz ")
+        print(f"Real frequency bandpass: {lb}-{ub} Hz ")
 
     # Goertzel
     elif args.method == 2:
-        method_units = r"\bf{Spectral Power}"
         method_res = dm.do_goertzel(buffer, args.sampleRate, args.goertzel)
+        method_res_norm = normalize_0_1(method_res)
         method_times = buf_times
 
         method = r"\bf{GOERTZEL}"
@@ -81,8 +81,8 @@ def main(args):
 
     # Filtering
     elif args.method == 3:
-        method_units = r"\bf{Counts}"
         method_res= dm.filter(buffer,args.sampleRate, args.filterFrequency, args.localOscillator, coefficients_antialiassing, coefficients_bandpass)
+        method_res_norm = normalize_0_1(method_res)
         method_times = buf_times
 
         method = r"\bf{FILTERING}"
@@ -95,6 +95,7 @@ def main(args):
     #######################################################
     # THRESHOLD
     #######################################################
+
 
     #######################################################
     # DETECTION
@@ -111,9 +112,16 @@ def main(args):
         gnrl.set_xlabel(r"\bf{Time (s)}")
 
         # Detection method
+        if args.normalised:
+            method_plot = method_res_norm
+            method_units = r"\bf{ - Result normalised}"
+        else:
+            method_plot = method_res
+            method_units = r"\bf{Calculation Result}"
+
         fig_method, (mth) = plt.subplots()
-        mth.plot(method_times, method_res)
-        mth.set_ylabel(method + " - " + method_units)
+        mth.plot(method_times, method_plot)
+        mth.set_ylabel(method + method_units)
         mth.set_xlabel(r"\bf{Time (s)}")
 
         # PLT SHOW
@@ -147,7 +155,7 @@ if __name__ == "__main__":
     argparser.add_argument("-m", "--method", help="Processing method, 1: FFT, 2: Go, 3: Filt, default = 1", type = int, default=1)
 
     # CONFIG METHODS
-    argparser.add_argument("-goe", "--goertzel", help="Goertzel method, center frequency, default = 69000", type=int, default=69000)
+    argparser.add_argument("-g", "--goertzel", help="Goertzel method, center frequency, default = 69000", type=int, default=69000)
 
     argparser.add_argument("-on", "--onFreq", help="Bandpass on frequency in Hz, default 68000 Hz", type=int, default = 68000)
     argparser.add_argument("-off", "--offFreq", help="Bandpass off frequency in Hz, default 70000 Hz", type=int, default=70000)
@@ -157,7 +165,8 @@ if __name__ == "__main__":
 
     # OUTPUT
     argparser.add_argument("-sw", "--show", help="show plot default YES (1)", type=int,default=1)
-    argparser.add_argument("-o", "--output", help="0 if no output, 1 if log.txt", type=int, default=1)
+    argparser.add_argument("-n", "--normalised", help="Output plot, 1 Normalised, 0 not normalised", type=int, default=0)
+    argparser.add_argument("-o", "--output", help="0 if no output, 1 if log.txt", type=int, default=0)
 
     # EXIT
     args = argparser.parse_args()
