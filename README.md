@@ -17,7 +17,6 @@ STATE OF THE REPOSITORY:
 ---------------
 TO BE IMPLEMENTED:
 
-- CFAR thresholding
 - DETECTION
 
 IMPLEMENTED:
@@ -25,6 +24,7 @@ IMPLEMENTED:
 - FFT processing
 - GÖERTZEL processing
 - FILTERING processing
+- CFAR thresholding
 
 ---------------------------
 LICENCE:
