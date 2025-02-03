@@ -154,6 +154,8 @@ def filter(data, sample_rate, frequency, f_LO, coefficients_antialiassing, coeff
 ###########################
 
 # FFT
+
+
 def do_fft(data, sample_rate,onFreq, offFreq):
 
     """
@@ -193,6 +195,8 @@ def do_fft(data, sample_rate,onFreq, offFreq):
     return out_fft, rlb, rub
 
 # Goertzel
+
+
 def do_goertzel(data, sample_rate, target_freq):
 
     """
@@ -200,7 +204,7 @@ def do_goertzel(data, sample_rate, target_freq):
     in a given signal sample array.
 
     Parameters:
-    samples (np.array): Input signal samples.
+    data (np.array): Input signal samples.
     sample_rate (float): Sampling rate in Hz.
     target_freq (float): Target frequency to detect in Hz.
 
@@ -234,11 +238,27 @@ def do_goertzel(data, sample_rate, target_freq):
 # MANAGE THRESHOLD
 ###########################
 
+
 def do_cfar(data, sample_rate, buffer_len, pulse_width, cells):
+
+    """
+    Implements CFAR to detect a signal
+
+    Parameters:
+    data (list): Input signal samples.
+    sample_rate (float): Sampling rate in Hz.
+    buffer_len (float)
+    pulse_width (int): width time of the pulse to calculate the guard time
+    cells (int): number of cells to calculate CFAR
+
+    Returns:
+    threshold (list): Calculated threshold for each index of the list
+    detec (list): List with 0-1 if the data is under the threshold
+    """
 
     threshold = []
     detect = []
-    guard = ceil(pulse_width * sample_rate / (buffer_len * 1000))
+    guard = 4*ceil(pulse_width * sample_rate / (buffer_len * 1000))
 
     for i in range(len(data)):
         if data[i] == 0:
@@ -265,6 +285,38 @@ def do_cfar(data, sample_rate, buffer_len, pulse_width, cells):
 # CHECK PULSE WIDTH
 ###########################
 
-def do_check_pulse(data, sample_rate):
-    pass
-    return None
+
+def do_check_pulse(data, sample_rate, buffer_length, pulse_width):
+
+    detect = []
+    time_buf = buffer_length/sample_rate
+    up_ant = 0
+    up = 0
+    detect_times = []
+
+    for i in range(len(data)):
+
+        if data[i] == 1 and data [i-1] == 0:
+
+            up_ant = up
+            up = i
+            detect.append(-1)
+
+        elif data[i] == 0 and data [i-1] == 1:
+
+            prob = (i - up)*time_buf
+            prob_ant = (i - up_ant)*time_buf
+
+            if 0.007 >= prob >= 0.003:
+                detect.append(1)
+                detect_times.append(i*time_buf)
+
+            elif 0.007 >= prob_ant >= 0.003 and (i*time_buf-detect_times[-1] > 0.1):
+                detect.append(1)
+
+            else:
+                detect.append(-1)
+        else:
+            detect.append(-1)
+
+    return detect, detect_times

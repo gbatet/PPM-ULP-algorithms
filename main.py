@@ -105,8 +105,8 @@ def main(args):
     # DETECTION
     #######################################################
 
-    # detec_pulse = dm.do_check_pulse()
-
+    detec_pulse, detect_times = dm.do_check_pulse(detect,args.sampleRate,args.buffer,args.pulseWidth)
+    print(detect_times)
     #######################################################
     # PLOT
     #######################################################
@@ -128,6 +128,7 @@ def main(args):
         fig_method, (mth, thr) = plt.subplots(2,1)
         # # Method result
         mth.plot(method_times, method_plot, label="Signal Processed")
+        mth.plot(method_times,detec_pulse, "o", label="Pulse detection")
 
         if args.normalised:
             mth.plot(method_times, threshold, color="red", alpha = 0.3, label = "CFAR Threshold")
@@ -138,6 +139,7 @@ def main(args):
 
         # # Threshold
         thr.plot(method_times, detect, color="green", label = "Signal detection")
+        thr.plot(method_times,detec_pulse, "o", color = "orange", label="Pulse detection")
         thr.set_ylim(0,1.5)
         thr.legend(loc="upper right")
         thr.set_xlabel(r"\bf{Time (s)}")
