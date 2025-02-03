@@ -288,11 +288,26 @@ def do_cfar(data, sample_rate, buffer_len, pulse_width, cells):
 
 def do_check_pulse(data, sample_rate, buffer_length, pulse_width):
 
+    """
+    Checks if a pulse is correct within pm 2ms
+
+    Parameters:
+    data (list): Input signal detection samples.
+    sample_rate (float): Sampling rate in Hz.
+    buffer_length (float)
+    pulse_width (int): width time of the pulse
+
+    Returns:
+    detec (list): List with 0-1 if the pulse is correct
+    detect_times (list): Times wehere the pulse ends
+    """
+
     detect = []
     time_buf = buffer_length/sample_rate
     up_ant = 0
     up = 0
-    detect_times = []
+    detect_times = [-1]
+    pulse_width = pulse_width/1000
 
     for i in range(len(data)):
 
@@ -307,16 +322,18 @@ def do_check_pulse(data, sample_rate, buffer_length, pulse_width):
             prob = (i - up)*time_buf
             prob_ant = (i - up_ant)*time_buf
 
-            if 0.007 >= prob >= 0.003:
+            if pulse_width+0.002 >= prob >= pulse_width-0.002:
                 detect.append(1)
                 detect_times.append(i*time_buf)
 
-            elif 0.007 >= prob_ant >= 0.003 and (i*time_buf-detect_times[-1] > 0.1):
+            elif pulse_width+0.002 >= prob_ant >= pulse_width-0.002 and (i*time_buf-detect_times[-1] > 0.1):
                 detect.append(1)
 
             else:
                 detect.append(-1)
         else:
             detect.append(-1)
+
+    detect_times.pop(0)
 
     return detect, detect_times
