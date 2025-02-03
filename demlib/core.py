@@ -283,7 +283,7 @@ def do_cfar(data, sample_rate, buffer_len, pulse_width, cells):
     return threshold, detect
 
 # CHECK PULSE WIDTH
-###########################
+############################
 
 
 def do_check_pulse(data, sample_rate, buffer_length, pulse_width):

@@ -34,7 +34,6 @@ def main(args):
         sys.stdout = open("docs/log.txt", "w")
 
     method = ""  # Variable for method of processing
-    method_units = ""  # Variable for method units
     method_res = []  # Variable for the  method application result
     method_times = []  # Variable to store the times vector
 
@@ -154,7 +153,8 @@ def main(args):
     if args.output:
         sys.stdout.close()
 
-    return None
+    return detect_times
+
 
 if __name__ == "__main__":
 
@@ -195,8 +195,7 @@ if __name__ == "__main__":
     # EXIT
     args = argparser.parse_args()
 
-
     try:
-        main(args)
+        times = main(args)
     except KeyboardInterrupt:
         print("Program terminated by user.")
