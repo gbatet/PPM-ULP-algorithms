@@ -328,6 +328,7 @@ def do_check_pulse(data, sample_rate, buffer_length, pulse_width):
 
             elif pulse_width+0.002 >= prob_ant >= pulse_width-0.002 and (i*time_buf-detect_times[-1] > 0.1):
                 detect.append(1)
+                detect_times.append(i * time_buf)
 
             else:
                 detect.append(-1)
@@ -337,3 +338,34 @@ def do_check_pulse(data, sample_rate, buffer_length, pulse_width):
     detect_times.pop(0)
 
     return detect, detect_times
+
+# DECODE AND DETECTION
+############################
+
+
+def decode_times(data, init_time, dict_msg):
+
+    init = round(init_time,2)*100
+    msg = []
+    pings = len(data)
+
+    if len(data) > 2:
+
+        for i in range(1,len(data)):
+
+            diff = data[i]-data[i-1]
+            diff = np.round(diff, 2)*100
+            # If init time pm 5ms
+            if init == diff:
+                msg.append("init")
+
+            # If else that is in the dictionary
+            elif (diff % 2 == 0) and (init < diff <= max(dict_msg)):
+                print(init_time)
+                msg.append(dict_msg[diff])
+            else: pass
+
+    else:
+        msg = "Not enough data"
+
+    return pings, msg

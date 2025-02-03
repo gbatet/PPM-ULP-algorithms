@@ -1,4 +1,4 @@
-![Static Badge](https://img.shields.io/badge/Repository_Status-Building-yellow?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/Current_Version-v0.0.5-green?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/Repository_Status-Building-yellow?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/Current_Version-v0.0.6-green?style=for-the-badge)
 # PPM-ULP-algorithms
  
 Pulse Position Modulation (PPM) demodulation Ultra low power (ULP) algorithms test repository
@@ -17,7 +17,7 @@ STATE OF THE REPOSITORY:
 ---------------
 TO BE IMPLEMENTED:
 
-- DETECTION
+- TESTS
 
 IMPLEMENTED:
 
@@ -26,6 +26,7 @@ IMPLEMENTED:
 - FILTERING processing
 - CFAR thresholding
 - Pulse check
+- TIME DETECTION
 
 ---------------------------
 LICENCE:

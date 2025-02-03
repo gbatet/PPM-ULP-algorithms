@@ -13,6 +13,7 @@ import demlib as dm
 from complementary.PPMdemlib_old import normalize_0_1
 from demlib import do_cfar
 from docs.filter_coefficients import coefficients_antialiassing, coefficients_bandpass
+from docs.decode_lists import dict_vemco
 
 from math import ceil
 
@@ -105,7 +106,9 @@ def main(args):
     #######################################################
 
     detec_pulse, detect_times = dm.do_check_pulse(detect,args.sampleRate,args.buffer,args.pulseWidth)
-    print(detect_times)
+    pings, decoded = dm.decode_times(detect_times,0.339,dict_vemco)
+
+    print(f"{pings} pings\nmsg: {decoded}")
     #######################################################
     # PLOT
     #######################################################
@@ -199,3 +202,4 @@ if __name__ == "__main__":
         times = main(args)
     except KeyboardInterrupt:
         print("Program terminated by user.")
+
