@@ -15,7 +15,6 @@ from demlib import do_cfar
 from docs.filter_coefficients import coefficients_antialiassing, coefficients_bandpass
 from docs.decode_lists import dict_vemco
 
-from math import ceil
 
 from argparse import ArgumentParser
 import matplotlib.pyplot as plt
@@ -199,7 +198,12 @@ if __name__ == "__main__":
     args = argparser.parse_args()
 
     try:
-        times = main(args)
+        pings, decoded = main(args)
+
     except KeyboardInterrupt:
         print("Program terminated by user.")
+
+    except KeyError:
+        pings = "NaN"
+        msg = "NaN"
 

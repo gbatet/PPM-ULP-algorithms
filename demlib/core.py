@@ -8,7 +8,7 @@ created: 23/01/2024
 """
 
 
-from math import sqrt, floor, ceil, trunc
+from math import floor, ceil, trunc
 
 
 from scipy.fft import fft, fftfreq
@@ -16,11 +16,7 @@ from scipy.signal.windows import hann, blackman, blackmanharris
 from scipy.io import wavfile
 import numpy as np
 
-import matplotlib.pyplot as plt
 
-plt.rcParams.update({
-    "text.usetex": True
-})
 
 #######################################################
 # READ DATA
@@ -345,7 +341,19 @@ def do_check_pulse(data, sample_rate, buffer_length, pulse_width):
 
 def decode_times(data, init_time, dict_msg):
 
-    init = round(init_time,2)*100
+    """
+    Time between pulse decoding in front of a dictionary
+
+    Parameters:
+    data (list): list of timestamps where the end of the pings are
+    init_time (ms): Typically
+
+    Returns:
+    Pings (int): Number of existing pings
+    msg (list): decoded msg
+    """
+
+    init = round(init_time, 2)*100
     msg = []
     pings = len(data)
 
@@ -361,7 +369,6 @@ def decode_times(data, init_time, dict_msg):
 
             # If else that is in the dictionary
             elif (diff % 2 == 0) and (init < diff <= max(dict_msg)):
-                print(init_time)
                 msg.append(dict_msg[diff])
             else: pass
 
