@@ -108,6 +108,7 @@ def main(args):
     # DETECTION
     #######################################################
 
+    ID_pulse, ID_times = dm.do_check_pulse_broad(detect, args.sampleRate, args.buffer, 20)
     detec_pulse, detect_times = dm.do_check_pulse(detect,args.sampleRate,args.buffer,args.pulseWidth)
     pings, decoded = dm.decode_times(detect_times,0.339,dict_vemco)
 
@@ -130,7 +131,7 @@ def main(args):
             method_plot = method_res
             method_units = r"\bf{ - Calculation Result}"
 
-        fig_method, (mth, thr) = plt.subplots(2,1)
+        fig_method, (mth, thr, bro) = plt.subplots(3,1)
         # # Method result
         mth.plot(method_times, method_plot, label="Signal Processed")
         mth.plot(method_times,detec_pulse, "o", label="Pulse detection")
@@ -138,6 +139,7 @@ def main(args):
         if args.normalised:
             mth.plot(method_times, threshold, color="red", alpha = 0.3, label = "CFAR Threshold")
             mth.set_ylim(0, 1.5)
+            mth.set_xlim(-1, 31)
             mth.legend(loc="upper right")
 
         mth.set_ylabel(method + method_units)
@@ -145,10 +147,18 @@ def main(args):
         # # Threshold
         thr.plot(method_times, detect, color="green", label = "Signal detection")
         thr.plot(method_times,detec_pulse, "o", color = "orange", label="Pulse detection")
+
         thr.set_ylim(0,1.5)
+        thr.set_xlim(-1,31)
+
         thr.legend(loc="upper right")
         thr.set_xlabel(r"\bf{Time (s)}")
 
+        for i in range(len(ID_pulse)):
+            if ID_pulse[i]:
+                bro.vlines(ID_times[i], 0, 1)
+
+        bro.set_xlim(-1,31)
         # PLT SHOW
         plt.show()
     else: pass

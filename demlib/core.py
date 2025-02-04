@@ -335,6 +335,39 @@ def do_check_pulse(data, sample_rate, buffer_length, pulse_width):
 
     return detect, detect_times
 
+def do_check_pulse_broad(data, sample_rate, buffer_length, packet):
+
+    """
+    Checks if a pulse is correct within pm 20ms
+
+    Parameters:
+    data (list): Input signal detection samples.
+    sample_rate (float): Sampling rate in Hz.
+    buffer_length (float)
+    packet (int): width time of packet in ms
+
+    Returns:
+    detec (list): List with 0-1 if the pulse is correct
+    detect_times (list): Times wehere the pulse ends
+    """
+
+    input = data[0:(len(data)-1)]
+    detect = []
+    detect_times = []
+    packet_len = int((packet*sample_rate)/(buffer_length*1000))
+
+    while len(input) % packet_len:
+        input.append(0)
+
+    for i in range(0, len(data), packet_len):
+        if 1 in data[(i-packet_len):i]:
+            detect.append(1)
+        else:
+            detect.append(0)
+        detect_times.append(i*buffer_length/sample_rate)
+
+    return detect, detect_times
+
 # DECODE AND DETECTION
 ############################
 
