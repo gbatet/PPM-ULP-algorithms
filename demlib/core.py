@@ -370,6 +370,10 @@ def decode_times(data, init_time, dict_msg):
             # If else that is in the dictionary
             elif (diff % 2 == 0) and (init < diff <= max(dict_msg)):
                 msg.append(dict_msg[diff])
+
+            elif 2*max(dict_msg) > diff > 2*min(dict_msg):
+                msg.append("null")
+                msg.append("null")
             else: pass
 
     else:

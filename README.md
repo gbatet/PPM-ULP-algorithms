@@ -17,6 +17,7 @@ STATE OF THE REPOSITORY:
 ---------------
 TO BE IMPLEMENTED:
 
+- ID DETECTION 
 - TESTS
 
 IMPLEMENTED:
@@ -25,7 +26,7 @@ IMPLEMENTED:
 - GÖERTZEL processing
 - FILTERING processing
 - CFAR thresholding
-- Pulse check
+- PULSE CHECK
 - TIME DETECTION
 
 ---------------------------

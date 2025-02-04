@@ -9,6 +9,7 @@ created: 23/01/2024
 
 # IMPORTS
 import sys
+import time
 import demlib as dm
 from complementary.PPMdemlib_old import normalize_0_1
 from demlib import do_cfar
@@ -40,7 +41,7 @@ def main(args):
     #######################################################
     # READ DATA
     #######################################################
-    sample_rate, samples, time = dm.read_wav(args.input)  # Samples in counts
+    sample_rate, samples, time_wav = dm.read_wav(args.input)  # Samples in counts
     print(f"Input file: {args.input}")
 
     #######################################################
@@ -61,6 +62,7 @@ def main(args):
 
     # FFT
     if args.method == 1:
+
         method_res, lb, ub = dm.do_fft(buffer, args.sampleRate, args.onFreq, args.offFreq)
         method_res_norm = normalize_0_1(method_res)
         method_times = buf_times
@@ -72,6 +74,7 @@ def main(args):
 
     # Goertzel
     elif args.method == 2:
+
         method_res = dm.do_goertzel(buffer, args.sampleRate, args.goertzel)
         method_res_norm = normalize_0_1(method_res)
         method_times = buf_times
@@ -80,6 +83,7 @@ def main(args):
         print("Method: GOERTZEL")
         print(f"Center set frequency: {args.goertzel} Hz ")
         print(f"Frequency bin width: {args.sampleRate/(args.buffer*2)} Hz ")
+
 
     # Filtering
     elif args.method == 3:
@@ -114,7 +118,7 @@ def main(args):
     if args.show:
         # ADC input
         fig_gnrl, (gnrl) = plt.subplots()
-        gnrl.plot(time, samples)
+        gnrl.plot(time_wav, samples)
         gnrl.set_ylabel(r"\bf{ADC Counts - x(n)}")
         gnrl.set_xlabel(r"\bf{Time (s)}")
 
@@ -155,7 +159,7 @@ def main(args):
     if args.output:
         sys.stdout.close()
 
-    return detect_times
+    return pings, decoded
 
 
 if __name__ == "__main__":
@@ -198,6 +202,7 @@ if __name__ == "__main__":
     args = argparser.parse_args()
 
     try:
+        decoded = []
         pings, decoded = main(args)
 
     except KeyboardInterrupt:
