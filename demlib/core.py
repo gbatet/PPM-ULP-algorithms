@@ -127,16 +127,15 @@ def filter_antialiassing(data, coefficients):
 
     return filtered_signal
 
-def filter(data, sample_rate, frequency, f_LO, coefficients_antialiassing, coefficients_bandpass):
 
-    factor = trunc(frequency / (frequency - f_LO))
-    new_sampling_rate =  sample_rate/factor
+def do_filter(data, sample_rate, frequency, f_lo, coefficients_antialiassing, coefficients_bandpass):
+
+    factor = trunc(frequency / (frequency - f_lo))
 
     filter_output = []
 
-
     for i in range(len(data)):
-        mixed_signal = mix_downconvert(data[i], sample_rate, f_LO)
+        mixed_signal = mix_downconvert(data[i], sample_rate, f_lo)
         prefiltered_signal = filter_antialiassing(mixed_signal, coefficients_antialiassing)
         new_signal = prefiltered_signal[::factor]
         filtered_signal = np.convolve(new_signal, coefficients_bandpass, mode='same')

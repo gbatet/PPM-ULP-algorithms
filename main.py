@@ -87,7 +87,7 @@ def main(args):
 
     # Filtering
     elif args.method == 3:
-        method_res= dm.filter(buffer,args.sampleRate, args.filterFrequency, args.localOscillator, coefficients_antialiassing, coefficients_bandpass)
+        method_res = dm.do_filter(buffer,args.sampleRate, args.filterFrequency, args.localOscillator, coefficients_antialiassing, coefficients_bandpass)
         method_res_norm = normalize_0_1(method_res)
         method_times = buf_times
 
