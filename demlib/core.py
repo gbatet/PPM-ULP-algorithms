@@ -17,7 +17,6 @@ from scipy.io import wavfile
 import numpy as np
 
 
-
 #######################################################
 # READ DATA
 #######################################################
@@ -412,3 +411,9 @@ def decode_times(data, init_time, dict_msg):
         msg = "Not enough data"
 
     return pings, msg
+
+def correlate_id(data, sample_rate, packet, id_times):
+
+
+
+    return None
