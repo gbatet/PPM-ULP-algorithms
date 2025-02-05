@@ -377,7 +377,8 @@ def decode_times(data, init_time, dict_msg):
 
     Parameters:
     data (list): list of timestamps where the end of the pings are
-    init_time (ms): Typically
+    init_time (float in seconds): Typically 0.340 when vemco
+    dict_msg (dictionary): change from decoded times to msg decoding
 
     Returns:
     Pings (int): Number of existing pings
@@ -412,8 +413,37 @@ def decode_times(data, init_time, dict_msg):
 
     return pings, msg
 
-def correlate_id(data, sample_rate, packet, id_times):
+def correlate_id_vemco(data, packet, id_times):
 
+    """
+    Correlate sliding data with id_times
 
+    Parameters:
+    data (list): bool list of possible pings after the threshold agrupated in packet length
+    packet (int in ms): size of the groping windows in ms. e.g. 340, 660...
+    id_times (list): list of encoding times of the ID
 
-    return None
+    Returns:
+    id_check (float) timestamp where the id is
+    """
+
+    # Make the Mask
+    id_translated = [0]*int((sum(id_times)/packet))
+    id_translated[0] = 1
+
+    for i in range(1, len(id_times)):
+        index = int(sum(id_times[:i])/packet)
+        id_translated[index] = 1
+
+    id_translated.append(1)
+
+    # correlate the mask
+    check = list(np.correlate(data, id_translated))
+
+    if 8 in check:
+        ind = check.index(8)
+        print(f"Detection at {(ind*packet/1000)} s")
+
+    check_time = list(np.arange(len(id_translated)*packet/1000,(len(data)+1)*packet/1000, packet/1000))
+
+    return check, check_time

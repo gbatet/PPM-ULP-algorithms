@@ -60,6 +60,8 @@ def main(args):
     # PROCESS THE BUFFERS
     #######################################################
 
+    method_res_norm = []
+
     # FFT
     if args.method == 1:
 
@@ -105,12 +107,16 @@ def main(args):
     threshold, detect = do_cfar(method_res_norm, args.sampleRate, args.buffer, args.pulseWidth, 50)
 
     #######################################################
-    # DETECTION
+    # DETECTION and DDECODE
     #######################################################
 
-    ID_pulse, ID_times = dm.do_check_pulse_broad(detect, args.sampleRate, args.buffer, 20)
     detec_pulse, detect_times = dm.do_check_pulse(detect,args.sampleRate,args.buffer,args.pulseWidth)
     pings, decoded = dm.decode_times(detect_times,0.339,dict_vemco)
+
+    packet = 20
+    id_pulse, id_times = dm.do_check_pulse_broad(detect, args.sampleRate, args.buffer, packet)
+    correlate, check_times = dm.correlate_id_vemco(id_pulse,packet,[340, 660, 600, 420, 460, 600, 500])
+
 
     print(f"{pings} pings\nmsg: {decoded}")
     #######################################################
@@ -152,13 +158,15 @@ def main(args):
         thr.set_xlim(-1,31)
 
         thr.legend(loc="upper right")
-        thr.set_xlabel(r"\bf{Time (s)}")
 
-        for i in range(len(ID_pulse)):
-            if ID_pulse[i]:
-                bro.vlines(ID_times[i], 0, 1)
+
+        for i in range(len(id_pulse)):
+            if id_pulse[i]:
+                bro.vlines(id_times[i], 0, max(correlate))
+        bro.plot(check_times, correlate, color = 'r', alpha = 0.7)
 
         bro.set_xlim(-1,31)
+        bro.set_xlabel(r"\bf{Time (s)}")
         # PLT SHOW
         plt.show()
     else: pass
@@ -213,7 +221,7 @@ if __name__ == "__main__":
 
     try:
         decoded = []
-        pings, decoded = main(args)
+        ping, deco = main(args)
 
     except KeyboardInterrupt:
         print("Program terminated by user.")
