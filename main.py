@@ -9,10 +9,8 @@ created: 23/01/2024
 
 # IMPORTS
 import sys
-import time
+
 import demlib as dm
-from complementary.PPMdemlib_old import normalize_0_1
-from demlib import do_cfar
 from docs.filter_coefficients import coefficients_antialiassing, coefficients_bandpass
 from docs.decode_lists import dict_vemco
 
@@ -66,7 +64,7 @@ def main(args):
     if args.method == 1:
 
         method_res, lb, ub = dm.do_fft(buffer, args.sampleRate, args.onFreq, args.offFreq)
-        method_res_norm = normalize_0_1(method_res)
+        method_res_norm = dm.normalize_0_1(method_res)
         method_times = buf_times
 
         method = r"\bf{FFT}"
@@ -78,7 +76,7 @@ def main(args):
     elif args.method == 2:
 
         method_res = dm.do_goertzel(buffer, args.sampleRate, args.goertzel)
-        method_res_norm = normalize_0_1(method_res)
+        method_res_norm = dm.normalize_0_1(method_res)
         method_times = buf_times
 
         method = r"\bf{GOERTZEL}"
@@ -90,7 +88,7 @@ def main(args):
     # Filtering
     elif args.method == 3:
         method_res = dm.do_filter(buffer,args.sampleRate, args.filterFrequency, args.localOscillator, coefficients_antialiassing, coefficients_bandpass)
-        method_res_norm = normalize_0_1(method_res)
+        method_res_norm = dm.normalize_0_1(method_res)
         method_times = buf_times
 
         method = r"\bf{FILTERING}"
@@ -104,7 +102,7 @@ def main(args):
     # THRESHOLD
     #######################################################
 
-    threshold, detect = do_cfar(method_res_norm, args.sampleRate, args.buffer, args.pulseWidth, 50)
+    threshold, detect = dm.do_cfar_adapt(method_res_norm, args.sampleRate, args.buffer, args.pulseWidth, args.buffer*10)
 
     #######################################################
     # DETECTION and DDECODE
@@ -165,7 +163,9 @@ def main(args):
                 bro.vlines(id_times[i], 0, max(correlate))
         bro.plot(check_times, correlate, color = 'r', alpha = 0.7)
 
-        bro.set_xlim(-1,31)
+        bro.set_xlim(-1, 31)
+
+
         bro.set_xlabel(r"\bf{Time (s)}")
         # PLT SHOW
         plt.show()

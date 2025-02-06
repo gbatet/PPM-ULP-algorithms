@@ -3,17 +3,13 @@ import numpy as np
 # NORMALIZATION
 
 def normalize_0_1(data):
-    data = data.astype(np.float32)
     return (data - np.min(data)) / (np.max(data) - np.min(data))
 
-
 def normalize_neg1_1(data):
-    data = data.astype(np.float32)
     return 2 * (data - np.min(data)) / (np.max(data) - np.min(data)) - 1
 
 
 def normalize_custom(data, a, b):
-    data = data.astype(np.float32)
     return a + (data - np.min(data)) * (b - a) / (np.max(data) - np.min(data))
 
 # DOWNSAMPLING
