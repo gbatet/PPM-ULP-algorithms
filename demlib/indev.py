@@ -113,21 +113,13 @@ def do_cfar_adapt(data, sample_rate, buffer_len, pulse_width, cells):
             res = np.mean(do_mean)/data[i]
 
         #Detection
-
-        if data[i] > res and start == 0:
+        res = res-0.05
+        if data[i] > res:
             detect.append(1)
-            start = 1
-            threshold.append(res)
-
-        elif data[i] > (res-offset) and start :
-            detect.append(1)
-            threshold.append(res-offset)
-
         else:
             detect.append(0)
-            offset = 0
-            start = 0
-            threshold.append(res)
+
+        threshold.append(res)
 
 
 
